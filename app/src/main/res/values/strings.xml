@@ -1,8 +1,8 @@
 <resources>
-    <string name="app_name">My Application</string>
-    <string name="login">login</string>
-    <string name="password">Password</string>
-    <string name="Login">Login</string>
-    <string name="submit">Submit</string>
-    <string name="hello_world">Hello World</string>
+    <string name="app_name">Network Implementation</string>
+    <string name="type_your_message">Type your message</string>
+    <string name="send">Send</string>
+    <string name="connect">Connect</string>
+    <string name="your_name">Your Name</string>
+    <string name="network_chat">Network Chat</string>
 </resources>
