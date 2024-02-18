@@ -12,8 +12,8 @@
         android:text="@string/network_chat"
         android:textSize="25sp"
         android:gravity="center"
-        android:background="#3498db"
-        android:textColor="#ffffff"
+        android:background="@color/brand_color_3"
+        android:textColor="@color/light_gray"
         android:padding="10dp"
         android:layout_alignParentTop="true"/>
 
@@ -38,13 +38,18 @@
                 android:inputType="text"
                 android:layout_weight="1"
                 android:layout_height="wrap_content"
-                android:hint="@string/your_name"/>
+                android:hint="@string/your_name"
+                android:textColorHint="@color/brand_color_2"
+                android:textStyle="bold"/>
 
             <Button
                 android:id="@+id/connectButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/connect"/>
+                android:text="@string/connect"
+                android:background="@color/brand_color_2"
+                android:textColor="@color/light_gray"
+                />
         </LinearLayout>
 
         <!-- Chat Messages Area -->
@@ -68,7 +73,10 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text=""
-                    android:padding="10dp"/>
+                    android:padding="10dp"
+                    android:textColor="@color/brand_color_2"
+                    android:textStyle="bold"
+                    android:textSize="11sp"/>
             </ScrollView>
         </LinearLayout>
 
@@ -86,13 +94,17 @@
                 android:layout_width="0dp"
                 android:layout_weight="1"
                 android:layout_height="wrap_content"
-                android:hint="@string/type_your_message"/>
+                android:hint="@string/type_your_message"
+                android:textColorHint="@color/brand_color_2"
+                android:textStyle="bold"/>
 
             <Button
                 android:id="@+id/sendButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/send"/>
+                android:text="@string/send"
+                android:textColor="@color/light_gray"
+                android:background="@color/brand_color_2"/>
         </LinearLayout>
 
     </LinearLayout>
