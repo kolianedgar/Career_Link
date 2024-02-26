@@ -12,6 +12,7 @@ import android.os.Bundle;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.style.StyleSpan;
+import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ScrollView;
@@ -73,16 +74,24 @@ public class MainActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String previousChildName) {}
+            public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String previousChildName) {
+
+            }
 
             @Override
-            public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {}
+            public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+
+            }
 
             @Override
-            public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String previousChildName) {}
+            public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String previousChildName) {
+
+            }
 
             @Override
-            public void onCancelled(@NonNull DatabaseError error) {}
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
         };
 
         ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -99,11 +108,14 @@ public class MainActivity extends AppCompatActivity {
                         isConnected = true;
                         while (!messageQueue.isEmpty()) {
                             Message message = messageQueue.poll();
-                            writeMessageToDatabase(message.getUserName(), message.getMessage(), success -> {
-                                if(success){
-                                    messageEditText.setText("");
-                                }else{
-                                    Toast.makeText(getApplicationContext(),"Error Occurred!", Toast.LENGTH_LONG).show();
+                            writeMessageToDatabase(message.getUserName(), message.getMessage(), new MessageWriteCallback() {
+                                @Override
+                                public void isSuccess(boolean success) {
+                                    if(success){
+                                        messageEditText.setText("");
+                                    }else{
+                                        Toast.makeText(getApplicationContext(),"Error Occurred!", Toast.LENGTH_LONG).show();
+                                    }
                                 }
                             });
                         }
@@ -119,60 +131,72 @@ public class MainActivity extends AppCompatActivity {
                     }
                 });
 
-        connectButton.setOnClickListener(view -> {
-            String connectButtonText = connectButton.getText().toString();
-            if(connectButtonText.equals("Connect")){
-                userName = nameEditText.getText().toString();
+        connectButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String connectButtonText = connectButton.getText().toString();
+                if(connectButtonText.equals("Connect")){
+                    userName = nameEditText.getText().toString();
 
-                if (userName.isEmpty()) return;
+                    if (userName.isEmpty()) return;
 
-                writeMessageToDatabase(userName, "Connected!", success -> {
-                    if(success){
-                        databaseReference.child("messages").addChildEventListener(childEventListener);
-                        nameEditText.setEnabled(false);
-                        connectButton.setText("Disconnect");
-                        chatTextView.setText("");
-                        messageEditText.setEnabled(true);
-                        sendButton.setEnabled(true);
-                    }else{
-                        Toast.makeText(getApplicationContext(),"Error Occurred!", Toast.LENGTH_LONG).show();
-                    }
-                });
+                    writeMessageToDatabase(userName, "Connected!", new MessageWriteCallback() {
+                        @Override
+                        public void isSuccess(boolean success) {
+                            if(success){
+                                databaseReference.child("messages").addChildEventListener(childEventListener);
+                                nameEditText.setEnabled(false);
+                                connectButton.setText("Disconnect");
+                                chatTextView.setText("");
+                                messageEditText.setEnabled(true);
+                                sendButton.setEnabled(true);
+                            }else{
+                                Toast.makeText(getApplicationContext(),"Error Occurred!", Toast.LENGTH_LONG).show();
+                            }
+                        }
+                    });
 
-            } else if (connectButtonText.equals("Disconnect")) {
-                writeMessageToDatabase(userName, "Disconnected!", success -> {
-                    if(success){
-                        databaseReference.child("messages").removeEventListener(childEventListener);
-                        nameEditText.setText("");
-                        nameEditText.setEnabled(true);
-                        connectButton.setText("Connect");
-                        messageEditText.setEnabled(false);
-                        sendButton.setEnabled(false);
-                    }else{
-                        Toast.makeText(getApplicationContext(),"Error Occurred!", Toast.LENGTH_LONG).show();
+                } else if (connectButtonText.equals("Disconnect")) {
+                    writeMessageToDatabase(userName, "Disconnected!", new MessageWriteCallback() {
+                        @Override
+                        public void isSuccess(boolean success) {
+                            if(success){
+                                databaseReference.child("messages").removeEventListener(childEventListener);
+                                nameEditText.setText("");
+                                nameEditText.setEnabled(true);
+                                connectButton.setText("Connect");
+                                messageEditText.setEnabled(false);
+                                sendButton.setEnabled(false);
+                            }else{
+                                Toast.makeText(getApplicationContext(),"Error Occurred!", Toast.LENGTH_LONG).show();
+                            }
+                        }
+                    });
+
+                }
+
+            }
+        });
+
+        sendButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String message = messageEditText.getText().toString ();
+
+                if(message.isEmpty()) return;
+
+                writeMessageToDatabase(userName, message, new MessageWriteCallback() {
+                    @Override
+                    public void isSuccess(boolean success) {
+                        if(success){
+                            messageEditText.setText("");
+                        }else{
+                            Toast.makeText(getApplicationContext(),"Error Occurred!", Toast.LENGTH_LONG).show();
+                        }
                     }
                 });
 
             }
-
-        });
-
-        sendButton.setOnClickListener(view -> {
-            String message = messageEditText.getText().toString ();
-
-            if(message.isEmpty()) return;
-
-            writeMessageToDatabase(userName, message, new MessageWriteCallback() {
-                @Override
-                public void isSuccess(boolean success) {
-                    if(success){
-                        messageEditText.setText("");
-                    }else{
-                        Toast.makeText(getApplicationContext(),"Error Occurred!", Toast.LENGTH_LONG).show();
-                    }
-                }
-            });
-
         });
     }
 
@@ -236,4 +260,5 @@ public class MainActivity extends AppCompatActivity {
             return message;
         }
     }
+
 }
