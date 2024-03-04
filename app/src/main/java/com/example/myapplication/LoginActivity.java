@@ -43,7 +43,7 @@ public class LoginActivity extends AppCompatActivity {
         int j = sharedPreferences.getInt("key", 0);
 
         if(j > 0){
-            Intent redirect_homepage = new Intent(getApplicationContext(), HelloActivity.class);
+            Intent redirect_homepage = new Intent(getApplicationContext(), MainActivity.class);
             startActivity(redirect_homepage);
         }
         register_button.setOnClickListener(v -> {
