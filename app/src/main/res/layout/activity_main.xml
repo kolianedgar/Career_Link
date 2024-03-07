@@ -8,10 +8,9 @@
 
     <TextView
         android:id="@+id/titleTextView"
-        android:layout_width="344dp"
+        android:layout_width="300dp"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
-        android:layout_marginEnd="35dp"
         android:background="@color/brand_color_3"
         android:gravity="center"
         android:padding="10dp"
@@ -21,14 +20,17 @@
         android:textSize="25sp" />
 
     <!-- Main Content Layout -->
+
     <ImageButton
         android:id="@+id/logout_button"
-        android:layout_width="64dp"
-        android:layout_height="58dp"
-        android:layout_marginStart="350dp"
-        android:layout_marginTop="0dp"
-        android:layout_marginEnd="10dp"
-        android:src="@drawable/logout" />
+        android:layout_width="100dp"
+        android:layout_height="64dp"
+        android:layout_toEndOf="@+id/titleTextView"
+        android:layout_marginEnd="8dp"
+        android:clickable="true"
+        android:contentDescription="@string/log_out"
+        android:src="@drawable/logout"
+        android:visibility="visible" />
 
     <LinearLayout
         android:layout_width="match_parent"

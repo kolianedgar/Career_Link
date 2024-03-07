@@ -68,10 +68,31 @@ public class RegisterActivity extends AppCompatActivity {
             password_input.setError("Please enter password");
             password_input.requestFocus();
         }
-        if(password.length() < 8){
-            password_input.setError("Please enter password with at least 8 characters");
+//        if(password.length() < 8){
+//            password_input.setError("Please enter password with at least 8 characters");
+//            password_input.requestFocus();
+//        }
+        if(!password.matches(".*[a-z].*")){
+            password_input.setError("Password should contain at least one lowercase letter");
             password_input.requestFocus();
         }
+        if(!password.matches(".*[A-Z].*")){
+            password_input.setError("Password should contain at least one uppercase letter");
+            password_input.requestFocus();
+        }
+        if(!password.matches(".*\\d.*")){
+            password_input.setError("Password should contain at least one number");
+            password_input.requestFocus();
+        }
+        if(!password.matches(".*[!@#$%^&*()_+{}\\[\\]:;<>,.?~\\\\/-].*")){
+            password_input.setError("Password should contain at least one special character");
+            password_input.requestFocus();
+        }
+        if(password.length() < 8){
+            password_input.setError("Password should be at least 8 characters long");
+            password_input.requestFocus();
+        }
+
         if(password_confirm_string.isEmpty()){
             password_confirm.setError("Please repeat password");
             password_confirm.requestFocus();
@@ -110,10 +131,7 @@ public class RegisterActivity extends AppCompatActivity {
     private void send_verification_email() {
         if(mAuth.getCurrentUser() != null){
             mAuth.getCurrentUser().sendEmailVerification().addOnCompleteListener(task -> {
-                if(task.isSuccessful()){
-                    Toast.makeText(getApplicationContext(), "Verify your email", Toast.LENGTH_SHORT).show();
-                }
-                else{
+                if(!task.isSuccessful()){
                     Toast.makeText(getApplicationContext(), "Oops! Failed to send verification email", Toast.LENGTH_SHORT).show();
                 }
             });

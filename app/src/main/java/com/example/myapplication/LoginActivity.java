@@ -32,7 +32,7 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_login);
 
         Email = findViewById(R.id.email_input);
         Password = findViewById(R.id.password);
@@ -109,7 +109,7 @@ public class LoginActivity extends AppCompatActivity {
 
     }
     private void send_user_to_next_activity() {
-        Intent intent = new Intent(getApplicationContext(), HelloActivity.class);
+        Intent intent = new Intent(getApplicationContext(), MainActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(intent);
     }
