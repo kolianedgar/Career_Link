@@ -14,7 +14,6 @@ import android.os.Bundle;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.style.StyleSpan;
-import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -29,15 +28,31 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
+import java.nio.charset.StandardCharsets;
+import java.security.InvalidKeyException;
+import java.security.Key;
+import java.security.NoSuchAlgorithmException;
 import java.text.SimpleDateFormat;
+import java.util.Base64;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Queue;
 import java.util.TimeZone;
 
+import javax.crypto.BadPaddingException;
+import javax.crypto.Cipher;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
+import javax.crypto.spec.SecretKeySpec;
+
 public class MainActivity extends AppCompatActivity {
 
+    private static final String AES_KEY = "aB2#xY8qW4zH9!pD3^sF6gV5rT7@jK1v";
+    private static final Key symmetricKey = new SecretKeySpec(AES_KEY.getBytes(StandardCharsets.UTF_8), "AES");
+
+    private final String disconnected = "Disconnected!";
+    private final String connected = "Connected!";
     private EditText nameEditText, messageEditText;
     private Button connectButton, sendButton;
     private TextView chatTextView;
@@ -74,7 +89,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String previousChildName) {
                 String userName = dataSnapshot.child("userName").getValue(String.class);
-                String message = dataSnapshot.child("message").getValue(String.class);
+                String message = decrypt(dataSnapshot.child("message").getValue(String.class));
                 appendMessageToChat(userName, message);
             }
 
@@ -140,7 +155,7 @@ public class MainActivity extends AppCompatActivity {
 
                 if (userName.isEmpty()) return;
 
-                writeMessageToDatabase(userName, "Connected!", success -> {
+                writeMessageToDatabase(userName, connected, success -> {
                     if(success){
                         databaseReference.child("messages").addChildEventListener(childEventListener);
                         nameEditText.setEnabled(false);
@@ -152,9 +167,8 @@ public class MainActivity extends AppCompatActivity {
                         Toast.makeText(getApplicationContext(),"Error Occurred!", Toast.LENGTH_LONG).show();
                     }
                 });
-
             } else if (connectButtonText.equals("Disconnect")) {
-                writeMessageToDatabase(userName, "Disconnected!", success -> {
+                writeMessageToDatabase(userName, disconnected, success -> {
                     if(success){
                         databaseReference.child("messages").removeEventListener(childEventListener);
                         nameEditText.setText("");
@@ -204,9 +218,11 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void writeMessageToDatabase(String userName, String message, MessageWriteCallback callback){
+        String encrypted_message = encrypt(message);
+
         HashMap<String, Object> messageHashMap = new HashMap<>();
         messageHashMap.put("userName", userName);
-        messageHashMap.put("message", message);
+        messageHashMap.put("message", encrypted_message);
 
         Date localDate = new Date();
         SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd_HHmmss");
@@ -223,6 +239,37 @@ public class MainActivity extends AppCompatActivity {
             Toast.makeText(getApplicationContext(), "Message queued for sending", Toast.LENGTH_SHORT).show();
         }
 
+    }
+
+    private String encrypt(String message){
+        try {
+            Cipher cipher = Cipher.getInstance("AES");
+            cipher.init(Cipher.ENCRYPT_MODE, symmetricKey);
+            byte[] encryptedMessage = cipher.doFinal(message.getBytes(StandardCharsets.UTF_8));
+            return Base64.getEncoder().encodeToString(encryptedMessage);
+        }
+        catch (NoSuchAlgorithmException | NoSuchPaddingException e)
+        {
+            throw new RuntimeException("Encryption algorithm not available", e);
+        }
+        catch (InvalidKeyException | BadPaddingException | IllegalBlockSizeException e)
+        {
+            throw new RuntimeException("Encryption failed", e);
+        }
+    }
+
+    private String decrypt(String encryptedMessage) {
+        try {
+            Cipher cipher = Cipher.getInstance("AES");
+            cipher.init(Cipher.DECRYPT_MODE, symmetricKey);
+            byte[] decodedBytes = Base64.getDecoder().decode(encryptedMessage);
+            byte[] decryptedBytes = cipher.doFinal(decodedBytes);
+            return new String(decryptedBytes, StandardCharsets.UTF_8);
+        } catch (NoSuchAlgorithmException | NoSuchPaddingException e) {
+            throw new RuntimeException("Decryption algorithm not available", e);
+        } catch (InvalidKeyException | BadPaddingException | IllegalBlockSizeException e) {
+            throw new RuntimeException("Decryption failed", e);
+        }
     }
 
     private void appendMessageToChat(String userName, String message) {
@@ -263,5 +310,4 @@ public class MainActivity extends AppCompatActivity {
             return message;
         }
     }
-
 }

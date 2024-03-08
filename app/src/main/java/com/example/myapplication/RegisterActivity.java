@@ -43,7 +43,6 @@ public class RegisterActivity extends AppCompatActivity {
         });
 
         register_submit.setOnClickListener(v -> auth_user());
-
     }
 
     private void auth_user() {
@@ -68,10 +67,6 @@ public class RegisterActivity extends AppCompatActivity {
             password_input.setError("Please enter password");
             password_input.requestFocus();
         }
-//        if(password.length() < 8){
-//            password_input.setError("Please enter password with at least 8 characters");
-//            password_input.requestFocus();
-//        }
         if(!password.matches(".*[a-z].*")){
             password_input.setError("Password should contain at least one lowercase letter");
             password_input.requestFocus();
@@ -109,6 +104,7 @@ public class RegisterActivity extends AppCompatActivity {
                     send_verification_email();
                     Toast.makeText(getApplicationContext(), "Registration successful. Please check your email address", Toast.LENGTH_SHORT).show();
                     mUser = mAuth.getCurrentUser();
+
                     send_user_to_next_activity();
                 }
                 else {
