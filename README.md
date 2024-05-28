@@ -6,7 +6,7 @@ It is a simple Online Chatting Application, enhanced with features like TCP conn
 # Running the application
 **Case 1: Installed Android VM on the machine**
 
-Install the .apk file on your Android VM:
+Install the app-debug.apk file on your Android VM:
 ```sh
 adb install <absolute-path-of-apk-file>
 ```
