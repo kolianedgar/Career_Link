@@ -11,6 +11,7 @@ Install the .apk file on your Android VM:
 adb install <absolute-path-of-apk-file>
 ```
 Run the application on Android VM.
+
 **Case 2: No Android VM on the computer**
 
 Go to the directory with .apk file:
